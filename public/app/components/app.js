@@ -31,22 +31,6 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
 
     // Integrate angular-translate instead of this.
 
-    $scope.content = [];
-
-    $scope.content['en'] = {
-        text1: "One more for good measure."
-    };
-    $scope.content['fr'] = {
-        text1: "Une de plus pour la route."
-    };
-
-    $scope.contentLangChoice = "en";
-
-    $scope.setLang = function (lang) {
-        $scope.textContent = $scope.content[lang];
-    };
-    $scope.setLang("en");
-
     $scope.changeLanguage = function (key) {
         $translate.use(key);
     }
