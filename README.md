@@ -7,4 +7,4 @@ Live website demo
 >bower install --save
 
 >cd ..
->npm install 
+
