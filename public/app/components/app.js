@@ -1,22 +1,40 @@
 // Module
 
-// Language support: Use https://github.com/angular-translate/angular-translate/blob/master/demo/ex1_basic_usage.htm
+// Language support: Use
+// https://github.com/angular-translate/angular-translate/blob/master/demo/ex1_basic_usage.htm
 
 var client28App = angular.module("client28App", ['ngRoute', 'ngResource', 'pascalprecht.translate'])
     .config(['$routeProvider', '$translateProvider', function ($routeProvider, $translateProvider) {
 
-        //$routeProvider
-        //
-        //.when("/", {
-        //        templateUrl: "views/"
-        //})
+        $routeProvider
+
+            .when("/home", {
+                templateUrl: "views/home.html",
+                controller: 'HomeController'
+            })
+            .when("/", {
+                templateUrl: "views/home.html",
+                controller: 'HomeController'
+            })
+            .when("/about", {
+                templateUrl: "views/about.html",
+                controller: "AboutController"
+            })
+            .when("/contact", {
+                templateUrl: "views/contact.html",
+                controller: "ContactController"
+            });
 
         $translateProvider
             .translations('en_US', {
-                'TEXT_ALLO': "texte en angl"
+                'TITRE1_GALLERIE':"Important section",
+                'TEXT_ALLO':      "texte en angl",
+                'BROWSE_GALLERY': "Browse gallery"
             })
             .translations('fr_CA', {
-                'TEXT_ALLO': "Texte en francais"
+                'TITRE1_GALLERIE':"Section importante",
+                'TEXT_ALLO': "Texte en francais",
+                'BROWSE_GALLERY': "Voir la gallerie"
             });
 
         $translateProvider
@@ -35,4 +53,12 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
         $translate.use(key);
     }
 
+}]);
+
+
+client28App.controller('ContactController', ['$scope', function ($scope) {
+}]);
+client28App.controller('AboutController', ['$scope', function ($scope) {
+}]);
+client28App.controller('HomeController', ['$scope', function ($scope) {
 }]);
