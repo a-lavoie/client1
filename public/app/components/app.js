@@ -24,6 +24,14 @@ var client28App = angular.module("client28App", ['ngRoute', 'ngResource', 'pasca
                 templateUrl: "views/contact.html",
                 controller: "ContactController"
             })
+            .when("/login", {
+                templateUrl: "views/landmanagement.html",
+                controller: "LandManagementController"
+            })
+            .when("/land/:id", {
+                templateUrl: "views/land.html",
+                controller: "LandDetailController"
+            })
             .otherwise({
                 redirectTo: "/"
             });
@@ -59,9 +67,77 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
 }]);
 
 
+client28App.controller('LandManagementController', ['$scope', function ($scope) {
+
+    $scope.lands = [
+        {   'id': 1,
+            'name':'Infosys Technologies',
+            'size': 125000,
+            'details': 125000,
+            'other': 'Bangalore'},
+        {   'id': 2,
+            'name':'Cognizant Technologies',
+            'size': 125000,
+            'details': 100000,
+            'other': 'Bangalore'}
+    ];
+
+    $scope.addRow = function(){
+        $scope.id = findHighestId() + 1;
+        $scope.lands.push({ 'id': $scope.id, 'name':$scope.name, 'size': $scope.size, 'details': $scope.details, 'other':$scope.other });
+        resetFormField();
+    };
+
+    $scope.editRow = function(name) {
+    }
+
+    $scope.removeRow = function(name){
+        var index = -1;
+        var comArr = eval( $scope.lands );
+        for( var i = 0; i < comArr.length; i++ ) {
+            if( comArr[i].name === name ) {
+                index = i;
+                break;
+            }
+        }
+        if( index === -1 ) {
+            alert( "Something gone wrong" );
+        }
+        $scope.lands.splice( index, 1 );
+    };
+
+    function resetFormField(){
+
+        $scope.id='';
+        $scope.name='';
+        $scope.details='';
+        $scope.size=0;
+        $scope.other='';
+
+    }
+
+    function findHighestId(){
+        var found=0;
+        var log=[];
+        angular.forEach( $scope.lands, function( value, key ){
+            console.log( key + "=" + value + "");
+            if ( value.id > found ) found = value.id;
+
+        }, log);
+        console.log(log);
+        return found;
+    }
+
+
+}]);
 client28App.controller('ContactController', ['$scope', function ($scope) {
 }]);
 client28App.controller('AboutController', ['$scope', function ($scope) {
 }]);
 client28App.controller('HomeController', ['$scope', function ($scope) {
+}]);
+client28App.controller('LandDetailController', ['$scope', function ($scope) {
+
+
+
 }]);
