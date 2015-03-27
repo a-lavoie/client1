@@ -23,16 +23,19 @@ var client28App = angular.module("client28App", ['ngRoute', 'ngResource', 'pasca
             .when("/contact", {
                 templateUrl: "views/contact.html",
                 controller: "ContactController"
+            })
+            .otherwise({
+                redirectTo: "/"
             });
 
         $translateProvider
             .translations('en_US', {
-                'TITRE1_GALLERIE':"Important section",
-                'TEXT_ALLO':      "texte en angl",
+                'TITRE1_GALLERIE': "Important section",
+                'TEXT_ALLO': "texte en angl",
                 'BROWSE_GALLERY': "Browse gallery"
             })
             .translations('fr_CA', {
-                'TITRE1_GALLERIE':"Section importante",
+                'TITRE1_GALLERIE': "Section importante",
                 'TEXT_ALLO': "Texte en francais",
                 'BROWSE_GALLERY': "Voir la gallerie"
             });
