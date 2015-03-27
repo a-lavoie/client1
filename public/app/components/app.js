@@ -67,61 +67,56 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
 }]);
 
 
-client28App.controller('LandManagementController', ['$scope', function ($scope) {
+client28App.controller('LandManagementController', ['$scope', 'LandsAsService', function ($scope, landsAsService) {
 
-    $scope.lands = [
-        {   'id': 1,
-            'name':'Infosys Technologies',
-            'size': 125000,
-            'details': 125000,
-            'other': 'Bangalore'},
-        {   'id': 2,
-            'name':'Cognizant Technologies',
-            'size': 125000,
-            'details': 100000,
-            'other': 'Bangalore'}
-    ];
+    $scope.lands = landsAsService.lands;
 
-    $scope.addRow = function(){
+    $scope.addRow = function () {
         $scope.id = findHighestId() + 1;
-        $scope.lands.push({ 'id': $scope.id, 'name':$scope.name, 'size': $scope.size, 'details': $scope.details, 'other':$scope.other });
+        $scope.lands.push({
+            'id': $scope.id,
+            'name': $scope.name,
+            'size': $scope.size,
+            'details': $scope.details,
+            'other': $scope.other
+        });
         resetFormField();
     };
 
-    $scope.editRow = function(name) {
+    $scope.editRow = function (name) {
     }
 
-    $scope.removeRow = function(name){
+    $scope.removeRow = function (name) {
         var index = -1;
-        var comArr = eval( $scope.lands );
-        for( var i = 0; i < comArr.length; i++ ) {
-            if( comArr[i].name === name ) {
+        var comArr = eval($scope.lands);
+        for (var i = 0; i < comArr.length; i++) {
+            if (comArr[i].name === name) {
                 index = i;
                 break;
             }
         }
-        if( index === -1 ) {
-            alert( "Something gone wrong" );
+        if (index === -1) {
+            alert("Something gone wrong");
         }
-        $scope.lands.splice( index, 1 );
+        $scope.lands.splice(index, 1);
     };
 
-    function resetFormField(){
+    function resetFormField() {
 
-        $scope.id='';
-        $scope.name='';
-        $scope.details='';
-        $scope.size=0;
-        $scope.other='';
+        $scope.id = '';
+        $scope.name = '';
+        $scope.details = '';
+        $scope.size = 0;
+        $scope.other = '';
 
     }
 
-    function findHighestId(){
-        var found=0;
-        var log=[];
-        angular.forEach( $scope.lands, function( value, key ){
-            console.log( key + "=" + value + "");
-            if ( value.id > found ) found = value.id;
+    function findHighestId() {
+        var found = 0;
+        var log = [];
+        angular.forEach($scope.lands, function (value, key) {
+            console.log(key + "=" + value + "");
+            if (value.id > found) found = value.id;
 
         }, log);
         console.log(log);
@@ -130,14 +125,65 @@ client28App.controller('LandManagementController', ['$scope', function ($scope) 
 
 
 }]);
+
+
 client28App.controller('ContactController', ['$scope', function ($scope) {
 }]);
 client28App.controller('AboutController', ['$scope', function ($scope) {
 }]);
 client28App.controller('HomeController', ['$scope', function ($scope) {
 }]);
-client28App.controller('LandDetailController', ['$scope', function ($scope) {
+client28App.controller('LandDetailController', ['$scope', 'LandsAsService', "$routeParams", function ($scope, landsAsService, routeParams) {
+    console.log("Editing land: " + routeParams.id);
+    $scope.land = landsAsService.fetchLand(routeParams.id);
 
-
-
+    $scope.saveLand = function(id){
+       landsAsService.setLand( id, $scope.land );
+    }
 }]);
+
+client28App.service('LandsAsService', function () {
+    var theselands;
+
+    this.lands = [
+        {
+            'id': 1,
+            'name': 'Infosys Technologies',
+            'size': 125000,
+            'details': 125000,
+            'other': 'Bangalore'
+        },
+        {
+            'id': 2,
+            'name': 'Cognizant Technologies',
+            'size': 125000,
+            'details': 100000,
+            'other': 'Bangalore'
+        }
+    ];
+    theselands = this.lands;
+    this.fetchLand = function (id) {
+        var found = {};
+        for ( var i=0; i< theselands.length ; i++) {
+            if (theselands[i].id == id) {
+                found = theselands[i];
+                break;
+            }
+        }
+        return found;
+    }
+    this.setLand = function(id, land) {
+        // First, let's find it
+        var found = 0;
+        for ( var i=0; i< theselands.length ; i++) {
+            if (theselands[i].id == id) {
+                found = i;
+                break;
+            }
+        }
+        theselands[found] = land;
+    }
+
+});
+
+
