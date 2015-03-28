@@ -160,6 +160,7 @@ client28App.controller('LandsController', ['$scope', 'LandsAsService', "Connexio
     });
     $scope.loginState = loginStatus.isLogged();
     $scope.$on('$destroy', loggedStateListener );
+    $scope.predicate = 'id';
 }]);
 
 

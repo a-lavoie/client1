@@ -1,15 +1,15 @@
 <table class="table"  ng-controller="LandsController">
     <tr>
-        <th>Land#
+        <th>Land# <span class="caret"></span>
         </th>
-        <th>Commercial name
+        <th>Commercial name <span class="caret"></span>
         </th>
-        <th>Size
+        <th><a href="" ng-click="predicate = 'size'; reverse=!reverse">Size <span class="caret"></span></a>
         </th>
         <th>Action
         </th>
     </tr>
-    <tr ng-repeat="land in lands">
+    <tr ng-repeat="land in lands | orderBy:predicate:reverse">
         <td>{{land.id}}
         </td>
         <td>{{land.name}}
