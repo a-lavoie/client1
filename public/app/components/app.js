@@ -32,17 +32,33 @@ var client28App = angular.module("client28App", ['ngRoute', 'ngResource', 'pasca
                 templateUrl: "views/land.html",
                 controller: "LandDetailController"
             })
+            .when("/lands", {
+                templateUrl: "views/lands.html",
+                controller: "LandsController"
+            })
             .otherwise({
                 redirectTo: "/"
             });
 
         $translateProvider
             .translations('en_US', {
+                'WELCOME_TO_OUR_PROJECT': "Welcome to our lands",
+                'VISIT_OUR_LANDS': "Visit these lands s;as  basl  als ls da sd f;a f a;d  df s df a d f2w;;kjfa fs;dfks fajjas;klf adfj; ; as;dkfj asf; fasd",
+                'LAND_LIST': "got to",
+                'SPECIAL_OFFER': "Special offer",
+                'THIS_IS_OUR_BEST_PLAN': "This land is our special offer a df;as sd f   d fadsfjj;k ksd fa; fj ;wj;lkf; fa sdf  h t   df  dfg sadf sdf asd f  w w23trey fgh df sdf dfg f ",
+                'SEE_THIS_SPECIAL': "See this offer",
                 'TITRE1_GALLERIE': "Important section",
                 'TEXT_ALLO': "texte en angl",
                 'BROWSE_GALLERY': "Browse gallery"
             })
             .translations('fr_CA', {
+                'WELCOME_TO_OUR_PROJECT': "Bienvenue sur notre project de terrain",
+                'VISIT_OUR_LANDS': "Visitez nos terrains, basl  als ls da sd f;a f a;d  df s df a d f2w;;kjfa fs;dfks fajjas;klf adfj; ; as;dkfj asf; fasd",
+                'LAND_LIST': "Voir les terrains",
+                'SPECIAL_OFFER': "Offre spéciale",
+                'THIS_IS_OUR_BEST_PLAN': "Ce terrain est notre offre spéciale a df;as sd f   d fadsfjj;k ksd fa; fj ;wj;lkf; fa sdf  h t   df  dfg sadf sdf asd f  w w23trey fgh df sdf dfg f ",
+                'SEE_THIS_SPECIAL': "Voir ce terrain",
                 'TITRE1_GALLERIE': "Section importante",
                 'TEXT_ALLO': "Texte en francais",
                 'BROWSE_GALLERY': "Voir la gallerie"
@@ -67,9 +83,14 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
 }]);
 
 
-client28App.controller('LandManagementController', ['$scope', 'LandsAsService', function ($scope, landsAsService) {
+client28App.controller('LandManagementController', ['$scope', 'LandsAsService', "ConnexionService", function ($scope, landsAsService, loggedState) {
 
     $scope.lands = landsAsService.lands;
+    $scope.isLogged = loggedState.isLogged();
+
+    $scope.setNewLoginState = function(){
+        loggedState.setLoginStatus($scope.isLogged);
+    }
 
     $scope.addRow = function () {
         $scope.id = findHighestId() + 1;
@@ -127,6 +148,13 @@ client28App.controller('LandManagementController', ['$scope', 'LandsAsService', 
 }]);
 
 
+client28App.controller('LandsController', ['$scope', 'LandsAsService', "ConnexionService", function ($scope, landsAsService, loginStatus) {
+    $scope.lands = landsAsService.fetchLands();
+    $scope.loginState = loginStatus.isLogged();
+}]);
+
+
+
 client28App.controller('ContactController', ['$scope', function ($scope) {
 }]);
 client28App.controller('AboutController', ['$scope', function ($scope) {
@@ -137,10 +165,21 @@ client28App.controller('LandDetailController', ['$scope', 'LandsAsService', "$ro
     console.log("Editing land: " + routeParams.id);
     $scope.land = landsAsService.fetchLand(routeParams.id);
 
-    $scope.saveLand = function(id){
-       landsAsService.setLand( id, $scope.land );
+    $scope.saveLand = function (id) {
+        landsAsService.setLand(id, $scope.land);
     }
 }]);
+
+client28App.service('ConnexionService', function () {
+    this.isLoggedIn = false;
+    this.isLogged = function(){
+        return this.isLoggedIn;
+    }
+    this.setLoginStatus = function( status ){
+        this.isLoggedIn = status;
+    }
+});
+
 
 client28App.service('LandsAsService', function () {
     var theselands;
@@ -162,9 +201,12 @@ client28App.service('LandsAsService', function () {
         }
     ];
     theselands = this.lands;
+    this.fetchLands = function(){
+        return theselands;
+    }
     this.fetchLand = function (id) {
         var found = {};
-        for ( var i=0; i< theselands.length ; i++) {
+        for (var i = 0; i < theselands.length; i++) {
             if (theselands[i].id == id) {
                 found = theselands[i];
                 break;
@@ -172,10 +214,10 @@ client28App.service('LandsAsService', function () {
         }
         return found;
     }
-    this.setLand = function(id, land) {
+    this.setLand = function (id, land) {
         // First, let's find it
         var found = 0;
-        for ( var i=0; i< theselands.length ; i++) {
+        for (var i = 0; i < theselands.length; i++) {
             if (theselands[i].id == id) {
                 found = i;
                 break;

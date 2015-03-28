@@ -1,0 +1,31 @@
+<div class="container route-content" ng-controller="LandsController">
+
+    <table class="table">
+        <tr>
+            <th>Land#
+            </th>
+            <th>Commercial name
+            </th>
+            <th>Size
+            </th>
+            <th>Action
+            </th>
+        </tr>
+        <tr ng-repeat="land in lands">
+            <td>{{land.id}}
+            </td>
+            <td>{{land.name}}
+            </td>
+            <td>{{land.size}}
+            </td>
+            <td>
+
+                <a class="btn btn-primary" ng-show="loginState" href="#/land/{{ land.id }}" role="button">Edit<a/>
+                <input type="button" ng-show="loginState" value="Remove" class="btn btn-danger" ng-click="removeRow(land.name)"/>
+                <a class="btn btn-primary" href="#/land/{{ land.id }}" role="button">View<a/>
+            </td>
+        </tr>
+    </table>
+
+
+</div>
