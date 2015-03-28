@@ -86,7 +86,12 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
 client28App.controller('LandManagementController', ['$scope', 'LandsAsService', "ConnexionService", function ($scope, landsAsService, loggedState) {
 
     $scope.lands = landsAsService.lands;
+
+    var loggedStateListener = $scope.$on("user:updated", function( event, args ){
+        $scope.isLogged = loggedState.isLogged();
+    });
     $scope.isLogged = loggedState.isLogged();
+    $scope.$on('$destroy', loggedStateListener );
 
     $scope.setNewLoginState = function(){
         loggedState.setLoginStatus($scope.isLogged);
@@ -148,9 +153,13 @@ client28App.controller('LandManagementController', ['$scope', 'LandsAsService', 
 }]);
 
 
-client28App.controller('LandsController', ['$scope', 'LandsAsService', "ConnexionService", function ($scope, landsAsService, loginStatus) {
+client28App.controller('LandsController', ['$scope', 'LandsAsService', "ConnexionService", "$rootScope", function ($scope, landsAsService, loginStatus, $rootScope) {
     $scope.lands = landsAsService.fetchLands();
+    var loggedStateListener = $rootScope.$on("user:updated", function( event, args ){
+        $scope.loginState = loginStatus.isLogged();
+    });
     $scope.loginState = loginStatus.isLogged();
+    $scope.$on('$destroy', loggedStateListener );
 }]);
 
 
@@ -170,13 +179,16 @@ client28App.controller('LandDetailController', ['$scope', 'LandsAsService', "$ro
     }
 }]);
 
-client28App.service('ConnexionService', function () {
+client28App.service('ConnexionService', function ( $rootScope ) {
     this.isLoggedIn = false;
     this.isLogged = function(){
         return this.isLoggedIn;
     }
     this.setLoginStatus = function( status ){
-        this.isLoggedIn = status;
+        if ( this.isLoggedIn != status ){
+            this.isLoggedIn = status;
+            $rootScope.$emit("user:updated");
+        }
     }
 });
 
