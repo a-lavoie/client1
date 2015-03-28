@@ -4,6 +4,7 @@
         <label>
             <input type="checkbox" ng-click="setNewLoginState()" ng-model="isLogged"> Set login state
         </label>
+
         <p class="">A user is connected ({{ isLogged }})</p>
     </div>
 
@@ -45,30 +46,7 @@
     </form>
 
 
-    <table class="table">
-        <tr>
-            <th>Land#
-            </th>
-            <th>Commercial name
-            </th>
-            <th>Size
-            </th>
-            <th>Action
-            </th>
-        </tr>
-        <tr ng-repeat="land in lands">
-            <td>{{land.id}}
-            </td>
-            <td>{{land.name}}
-            </td>
-            <td>{{land.size}}
-            </td>
-            <td>
-                <a class="btn btn-primary" href="#/land/{{ land.id }}" role="button">Edit<a/>
-                    <input type="button" value="Remove" class="btn btn-danger" ng-click="removeRow(land.name)"/>
-            </td>
-        </tr>
-    </table>
+    <div ng-include="'views/landsTable.html'"></div>
 
 
 </div>
