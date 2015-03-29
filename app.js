@@ -12,7 +12,7 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hjs');
+//app.set('view engine', 'hjs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -29,6 +29,7 @@ app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+    console.log("Entering in Error Not Found !");
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -41,7 +42,7 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
-        res.render('error', {
+        res.send('error', {
             message: err.message,
             error: err
         });
@@ -51,11 +52,14 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
+    console.log("Entering in Error Oups...");
+    console.log("err = " + JSON.stringify(err));
     res.status(err.status || 500);
-    res.render('error', {
+    res.send('error', {
         message: err.message,
-        error: {}
+        error: err
     });
+    return;
 });
 
 

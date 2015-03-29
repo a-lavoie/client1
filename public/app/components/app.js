@@ -85,7 +85,11 @@ client28App.controller('I18nController', ['$scope', "$translate", function ($sco
 
 client28App.controller('LandManagementController', ['$scope', 'LandsAsService', "ConnexionService", function ($scope, landsAsService, loggedState) {
 
-    $scope.lands = landsAsService.lands;
+    landsAsService.getLands().then(function(data){
+        $scope.lands = data;
+        return data;
+    });
+
 
     var loggedStateListener = $scope.$on("user:updated", function( event, args ){
         $scope.isLogged = loggedState.isLogged();
@@ -99,19 +103,22 @@ client28App.controller('LandManagementController', ['$scope', 'LandsAsService', 
 
     $scope.addRow = function () {
         $scope.id = findHighestId() + 1;
-        $scope.lands.push({
+        var land = {
             'id': $scope.id,
             'name': $scope.name,
             'size': $scope.size,
             'details': $scope.details,
             'other': $scope.other
-        });
+        };
+        $scope.lands.push( land );
+        landsAsService.addLand(land).then(function(data){
+            $scope.lands[data.id] = data;
+            return data;
+        })
         resetFormField();
     };
 
-    $scope.editRow = function (name) {
-    }
-
+    $scope.editRow = function (name) {}
     $scope.removeRow = function (name) {
         var index = -1;
         var comArr = eval($scope.lands);
@@ -154,13 +161,27 @@ client28App.controller('LandManagementController', ['$scope', 'LandsAsService', 
 
 
 client28App.controller('LandsController', ['$scope', 'LandsAsService', "ConnexionService", "$rootScope", function ($scope, landsAsService, loginStatus, $rootScope) {
-    $scope.lands = landsAsService.fetchLands();
+
+    landsAsService.getLands().then(function(data){
+        $scope.lands = data;
+        return data;
+    });
+
     var loggedStateListener = $rootScope.$on("user:updated", function( event, args ){
         $scope.loginState = loginStatus.isLogged();
     });
     $scope.loginState = loginStatus.isLogged();
     $scope.$on('$destroy', loggedStateListener );
     $scope.predicate = 'id';
+
+    var landsListener = $rootScope.$on("lands:updated", function(e, a){
+        landsAsService.getLands().then(function(data){
+            $scope.lands = data;
+            return data;
+        });
+    });
+    $scope.$on('$destroy', landsListener );
+
 }]);
 
 
@@ -173,11 +194,18 @@ client28App.controller('HomeController', ['$scope', function ($scope) {
 }]);
 client28App.controller('LandDetailController', ['$scope', 'LandsAsService', "$routeParams", function ($scope, landsAsService, routeParams) {
     console.log("Editing land: " + routeParams.id);
-    $scope.land = landsAsService.fetchLand(routeParams.id);
+    landsAsService.fetchLand(routeParams.id).then(function(data){
+        $scope.land = data;
+        return data;
+    });
 
     $scope.saveLand = function (id) {
-        landsAsService.setLand(id, $scope.land);
+        landsAsService.saveLand(id, $scope.land).then(function(data){
+            $scope.land = data;
+            return data;
+        })
     }
+
 }]);
 
 client28App.service('ConnexionService', function ( $rootScope ) {
@@ -194,51 +222,72 @@ client28App.service('ConnexionService', function ( $rootScope ) {
 });
 
 
-client28App.service('LandsAsService', function () {
-    var theselands;
+client28App.service('LandsAsService', [ "$http", "$rootScope", function ( $http, $rootScope ) {
+    var lands = [];
 
-    this.lands = [
-        {
-            'id': 1,
-            'name': 'Infosys Technologies',
-            'size': 125000,
-            'details': 125000,
-            'other': 'Bangalore'
-        },
-        {
-            'id': 2,
-            'name': 'Cognizant Technologies',
-            'size': 125000,
-            'details': 100000,
-            'other': 'Bangalore'
-        }
-    ];
-    theselands = this.lands;
-    this.fetchLands = function(){
-        return theselands;
-    }
-    this.fetchLand = function (id) {
-        var found = {};
-        for (var i = 0; i < theselands.length; i++) {
-            if (theselands[i].id == id) {
-                found = theselands[i];
-                break;
-            }
-        }
-        return found;
-    }
-    this.setLand = function (id, land) {
-        // First, let's find it
-        var found = 0;
-        for (var i = 0; i < theselands.length; i++) {
-            if (theselands[i].id == id) {
-                found = i;
-                break;
-            }
-        }
-        theselands[found] = land;
+    getLands().then(function(data){
+        lands = data;
+        return data;
+    });
+
+    function getLands(){
+        return $http.get('/api/lands')
+            .then(function(result, status, headers, config){
+                return result.data;
+            }, function(error){
+                console.log(error);
+                return error;
+            });
     }
 
-});
+    function fetchLand(id) {
+
+        return $http.get('/api/land/' + id)
+            .then(function(result, status, headers, config){
+                return result.data;
+            }, function(error){
+                console.log(error);
+                return error;
+            });
+    }
+
+    function saveLand(id, land) {
+
+        return $http.post('/api/land/' + id, land)
+            .then(function(result, status, headers, config){
+                $rootScope.$emit("lands:updated");
+                return result.data;
+            }, function(error){
+                console.log(error);
+                return error;
+            });
+
+    }
+
+    function addLand(land) {
+
+        return $http.post('/api/land', land)
+            .then(function(result, status, headers, config){
+                $rootScope.$emit("lands:updated");
+                return result.data;
+            }, function(error){
+                console.log(error);
+                return error;
+            });
+
+    }
+
+
+    var service = {
+        lands: lands,
+        fetchLand: fetchLand,
+        getLands: getLands,
+        saveLand: saveLand,
+        addLand: addLand
+    };
+
+    return service;
+
+}]);
 
 
