@@ -22,9 +22,9 @@ p.directive("customDirective", function(){
       // default (scope) hérité du controller parent, sinon pour l'isoler on fait 
       scope: {   // Permettra de faire du mapping entre le scope du controlleur parent et celui de la directive
          personName: "@"  // Text mapping for an attribute defined person-name in tag; action d'interpoler
-         '': 
-         '': 
-         '': 
+         personAddress: "@" 
+         personObject: "=",
+         
          
       } 
    };
@@ -35,7 +35,12 @@ In HTML
 <custom-directive></custom-directive>  --> remplacer par fichier customdirective.html
 // ou <div custom-directive></div> 
 // 
-<custom-directive person-name='person.name'></custom-directive>
+<custom-directive 
+   person-name='{{person.name}}' 
+   person-address='{{}}'
+   person-object="person"
+   formatted-address-function="func(person)" // func est une function définie sur le scope du controller parent 
+</custom-directive>
 
 Fichier customdirective.html
 <a ...
