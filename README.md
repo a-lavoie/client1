@@ -17,7 +17,7 @@ p.directive("customDirective", function(){
    return {
       template: "<a...>",
       replace: false, // (default)
-   
+      restrict: '', // default E: Element + A: Attribute, ... C: Class, M: Comment ou combiné 
    };
 });
 
