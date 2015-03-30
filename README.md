@@ -8,3 +8,5 @@ Live website demo
 
 >cd ..
 
+# Common helper commands (on Ubuntu 14.04)
+>  sudo netstat -lpn | grep 8080   # Find process listen to a port
