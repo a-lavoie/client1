@@ -24,8 +24,7 @@ p.directive("customDirective", function(){
          personName: "@"  // Text mapping for an attribute defined person-name in tag; action d'interpoler
          personAddress: "@" 
          personObject: "=",
-         
-         
+         formattedAddressFunction: "&",
       } 
    };
 });
@@ -39,13 +38,18 @@ In HTML
    person-name='{{person.name}}' 
    person-address='{{}}'
    person-object="person"
-   formatted-address-function="func(person)" // func est une function définie sur le scope du controller parent 
+   formatted-address-function="func(aptr)" // func est une function définie sur le scope du controller parent 
 </custom-directive>
 
 Fichier customdirective.html
 <a ...
 
    {{ personName }}
+   {{ formattedAddressFunction({ aptr: personO })  }}  // Utilisation d'un object map ou aptr 
+                                                       // est vu comme un nom de parametre seulement correspondant
+                                                       // comme l'argument défini, je crois comprendre qu'il 
+                                                       // s'agit du pointer dans person-object, mais comment
+                                                       // le lien est fait...
 
 /a>
 
