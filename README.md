@@ -10,3 +10,18 @@ Live website demo
 
 # Common helper commands (on Ubuntu 14.04)
 >  sudo netstat -lpn | grep 8080   # Find process listen to a port
+
+In js:
+
+p.directive("customDirective", function(){
+   return {
+      template: "<a...>",
+      replace: false, // (default)
+   
+   };
+});
+
+In HTML
+
+<custom-directive></custom-directive>  
+// ou <div custom-directive></div> 
