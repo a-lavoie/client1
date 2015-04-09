@@ -119,19 +119,19 @@ client28App.controller('LandManagementController', ['$scope', 'LandsAsService', 
     };
 
     $scope.editRow = function (name) {}
-    $scope.removeRow = function (name) {
-        var index = -1;
+    $scope.removeRow = function (id) {
         var comArr = eval($scope.lands);
+        var index = -1;
         for (var i = 0; i < comArr.length; i++) {
-            if (comArr[i].name === name) {
+            if (comArr[i].id === id) {
                 index = i;
                 break;
             }
         }
-        if (index === -1) {
-            alert("Something gone wrong");
-        }
-        $scope.lands.splice(index, 1);
+        landsAsService.removeLand(id).then(function(data){
+            $scope.lands.splice(index, 1);
+            return data;
+        })
     };
 
     function resetFormField() {
@@ -277,13 +277,27 @@ client28App.service('LandsAsService', [ "$http", "$rootScope", function ( $http,
 
     }
 
+    function removeLand(landId) {
+
+        return $http.delete('/api/land/' + landId, {})
+            .then(function(result, status, headers, config){
+                $rootScope.$emit("lands:updated");
+                return result.data;
+            }, function(error){
+                console.log(error);
+                return error;
+            });
+
+    }
+
 
     var service = {
         lands: lands,
         fetchLand: fetchLand,
         getLands: getLands,
         saveLand: saveLand,
-        addLand: addLand
+        addLand: addLand,
+        removeLand: removeLand
     };
 
     return service;

@@ -70,6 +70,33 @@ router.post('/api/land/:id', function (req, res, next) {
     res.send(landFound);
 });
 
+function findLandIndex( id ) {
+    var found = -1;
+    var lands = app.locals.lands;
+    for (var i = 0; i < lands.length; i++) {
+        if (lands[i].id == id){
+            found = i;
+            break;
+        }
+    }
+    return found;
+}
+
+
+router.delete('/api/land/:id', function (req, res, next) {
+
+    console.log("Receiving this data to delete in lands: " + JSON.stringify(req.body));
+    var result = 404;
+    var lands = app.locals.lands;
+    var land = findLandIndex(req.params.id);
+    if (land >= 0) {
+        lands.splice(land, 1);
+        result=200;
+    }
+    console.log("Sending this result lands: " + result);
+    res.sendStatus(result);
+});
+
 
 router.post('/api/land', function (req, res, next) {
     var land;
@@ -79,11 +106,12 @@ router.post('/api/land', function (req, res, next) {
     function findHighestId() {
         var found = 0;
         var lands = app.locals.lands;
-        for ( var i=0; i< lands.length; i++){
+        for (var i = 0; i < lands.length; i++) {
             if (lands[i].id > found) found = lands[i].id;
         }
         return found;
     }
+
     var highestId = findHighestId();
     land = req.body;
     land.id = highestId + 1;
