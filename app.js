@@ -1,11 +1,10 @@
 var express = require('express');
+var app = express();
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var routes = require('./routes/index');
-var users = require('./routes/users');
 var lands = require('./server/models/lands.js');
 var fs = require('fs');
 var models = {};
@@ -17,20 +16,20 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;   
 mongoose.connect('mongodb://localhost/client1');
 
-debugger;
 var dirModelFiles = __dirname + '/server/models/';
 fs.readdirSync(dirModelFiles).forEach(function(filename){
   if ( ~filename.indexOf('.js')){
     modelName = path.basename(filename, '.js');
     var m = require(dirModelFiles + filename); 
-    //var n = mongoose.model('Land');
-    //models[modelName] = n; 
-
   } 
 }); 
 
-
-var ExSchema = new Schema ({ 
+var ExSchema = new Schema ({  
+  id: Number,
+  name: String,
+  details: String,
+  updated: Date,
+  other: String,
   username: String,
   email: String,
   commercialName: String,
@@ -38,22 +37,18 @@ var ExSchema = new Schema ({
   updatedDescription: Date
 });
 
-var LandModel = mongoose.model('LandModel', ExSchema, 'usercollection');
 
-LandModel.findOne(function(err, doc){
-   console.log('error: ' + err);
-   console.log('doc: ' + doc);
-   debugger;
-   console.log('détails:' + doc.email); 
-});
+var LandModel = mongoose.model('LandModel', ExSchema, 'landcollection');
+client1 = { locals: {} };
+client1.locals.LandModel = LandModel;
 
-//.findOne(function(err, doc){
-//   console.log('error: ' + err);
-//   console.log('doc: ' + doc);
-//});
+// LandModel.findOne(function(err, doc){
+//    console.log('error: ' + err); 
+//    console.log('doc: ' + doc);
+//    debugger;
+//    console.log('détails:' + doc.name); 
+// });
 
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -69,6 +64,8 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+var routes = require('./routes/mindex');
+var users = require('./routes/users');
 app.use('/', routes);
 app.use('/users', users);
 

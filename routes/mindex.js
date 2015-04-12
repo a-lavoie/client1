@@ -11,25 +11,24 @@ router.get('/api/exp', function (req, res, next) {
 });
 
 app = express();
-app.locals.lands = [
-    {
-        'id': 1,
-        'name': 'Infosys Technologies',
-        'size': 125000,
-        'details': 'Encore d autres détails',
-        'updated': new Date().toISOString(),
-        'other': 'Bangalore'
-    },
-    {
-        'id': 2,
-        'name': 'Cognizant Technologies',
-        'size': 125,
-        'details': 'This is details',
-        'updated': new Date().toISOString(),
-        'other': 'Bangalore'
-    }
+app.locals.lands = [ 
+{
+    'id': 1,
+    'name': 'Infosys Technologies',
+    'size': 125000,
+    'details': 'Encore d autres détails',
+    'updated': new Date().toISOString(),
+    'other': 'Bangalore'
+},
+{
+    'id': 2,
+    'name': 'Cognizant Technologies',
+    'size': 125,
+    'details': 'This is details',
+    'updated': new Date().toISOString(),
+    'other': 'Bangalore'
+}
 ];
-
 
 router.get('/api/lands', function (req, res, next) {
 
@@ -38,20 +37,30 @@ router.get('/api/lands', function (req, res, next) {
 });
 router.get('/api/land/:id', function (req, res, next) {
 
-    var found = 404;
-    var lands = app.locals.lands;
-    for (var i = 0; i < lands.length; i++) {
+    client1.locals.LandModel.findOne( {id: req.params.id }, function(err, doc){ 
+
+       debugger;
+       console.log('détails:' + doc); 
+
+       var found = 404;
+       var lands = app.locals.lands;
+       for (var i = 0; i < lands.length; i++) {
         if (lands[i].id == req.params.id) {
             found = lands[i];
             break;
         }
     }
     res.send(found);
+
+});
+
+
 });
 
 
 router.post('/api/land/:id', function (req, res, next) {
 
+    debugger;
     console.log("Receiving this data to save in lands: " + JSON.stringify(req.body));
     var found = 0;
     var landFound = 404;
@@ -85,6 +94,7 @@ function findLandIndex( id ) {
 
 router.delete('/api/land/:id', function (req, res, next) {
 
+    debugger;
     console.log("Receiving this data to delete in lands: " + JSON.stringify(req.body));
     var result = 404;
     var lands = app.locals.lands;
@@ -101,7 +111,8 @@ router.delete('/api/land/:id', function (req, res, next) {
 router.post('/api/land', function (req, res, next) {
     var land;
 
-    console.log("Receiving this data to save in lands: " + JSON.stringify(req.body));
+    debugger;
+    console.log("Receiving this data to save in lands: " + JSON.stringify(req.body)); 
 
     function findHighestId() {
         var found = 0;
