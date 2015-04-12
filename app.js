@@ -4,9 +4,54 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var lands = require('./server/models/lands.js');
+var fs = require('fs');
+var models = {};
+
+//var config = require('./config.js');
+var mongo = require('mongodb');
+
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;   
+mongoose.connect('mongodb://localhost/client1');
+
+debugger;
+var dirModelFiles = __dirname + '/server/models/';
+fs.readdirSync(dirModelFiles).forEach(function(filename){
+  if ( ~filename.indexOf('.js')){
+    modelName = path.basename(filename, '.js');
+    var m = require(dirModelFiles + filename); 
+    //var n = mongoose.model('Land');
+    //models[modelName] = n; 
+
+  } 
+}); 
+
+
+var ExSchema = new Schema ({ 
+  username: String,
+  email: String,
+  commercialName: String,
+  size: Number,
+  updatedDescription: Date
+});
+
+var LandModel = mongoose.model('LandModel', ExSchema, 'usercollection');
+
+LandModel.findOne(function(err, doc){
+   console.log('error: ' + err);
+   console.log('doc: ' + doc);
+   debugger;
+   console.log('détails:' + doc.email); 
+});
+
+//.findOne(function(err, doc){
+//   console.log('error: ' + err);
+//   console.log('doc: ' + doc);
+//});
+
 
 var app = express();
 
@@ -15,7 +60,7 @@ app.set('views', path.join(__dirname, 'views'));
 //app.set('view engine', 'hjs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+//app.use(favicon(__dirname + '/public/favicon.ico')); 
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -40,6 +85,7 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
+    // app.use(session({secret: 'indeveloppement'});
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.send('error', {
@@ -47,6 +93,8 @@ if (app.get('env') === 'development') {
             error: err
         });
     });
+} else {
+
 }
 
 // production error handler
