@@ -36,25 +36,16 @@ router.get('/api/lands', function (req, res, next) {
 
 });
 router.get('/api/land/:id', function (req, res, next) {
-
     client1.locals.LandModel.findOne( {id: req.params.id }, function(err, doc){ 
-
-       debugger;
-       console.log('détails:' + doc); 
-
-       var found = 404;
-       var lands = app.locals.lands;
-       for (var i = 0; i < lands.length; i++) {
-        if (lands[i].id == req.params.id) {
-            found = lands[i];
-            break;
-        }
-    }
-    res.send(found);
-
-});
-
-
+       //debugger;
+       if ( !err ){
+          res.send(404);
+       } else if ( doc != null ){
+          res.send(doc);
+       } else {
+          res.send(404);
+       }
+    });
 });
 
 

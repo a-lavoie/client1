@@ -30,8 +30,6 @@ var ExSchema = new Schema ({
   details: String,
   updated: Date,
   other: String,
-  username: String,
-  email: String,
   commercialName: String,
   size: Number,
   updatedDescription: Date
