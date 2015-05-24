@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var lands = require('./server/models/lands.js');
 var fs = require('fs');
 var models = {};
+var mlands = require('./server/models/lands');
 
 //var config = require('./config.js');
 var mongo = require('mongodb');
@@ -16,37 +17,21 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;   
 mongoose.connect('mongodb://localhost/client1');
 
-var dirModelFiles = __dirname + '/server/models/';
-fs.readdirSync(dirModelFiles).forEach(function(filename){
-  if ( ~filename.indexOf('.js')){
-    modelName = path.basename(filename, '.js');
-    var m = require(dirModelFiles + filename); 
-  } 
-}); 
 
-var ExSchema = new Schema ({  
-  id: Number,
-  name: String,
-  details: String,
-  updated: Date,
-  other: String,
-  commercialName: String,
-  size: Number,
-  updatedDescription: Date
-});
-
-
-var LandModel = mongoose.model('LandModel', ExSchema, 'landcollection');
 client1 = { locals: {} };
-client1.locals.LandModel = LandModel;
-
-// LandModel.findOne(function(err, doc){
-//    console.log('error: ' + err); 
-//    console.log('doc: ' + doc);
-//    debugger;
-//    console.log('détails:' + doc.name); 
-// });
-
+client1.locals.optionsCreation = false;
+if (client1.locals.optionsCreation){
+   var dirModelFiles = __dirname + '/server/models/';
+   fs.readdirSync(dirModelFiles).forEach(function(filename){
+     if ( ~filename.indexOf('.js')){
+       console.log('Loading file: ' + filename);
+       modelName = path.basename(filename, '.js');
+       var m = require(dirModelFiles + filename); 
+     } 
+   }); 
+} else {
+    client1.locals.mlands = mlands;
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -193,14 +193,17 @@ client28App.controller('AboutController', ['$scope', function ($scope) {
 client28App.controller('HomeController', ['$scope', function ($scope) {
 }]);
 client28App.controller('LandDetailController', ['$scope', 'LandsAsService', "$routeParams", function ($scope, landsAsService, routeParams) {
+
     console.log("Editing land: " + routeParams.id);
+
     landsAsService.fetchLand(routeParams.id).then(function(data){
         $scope.land = data;
         return data;
     });
 
     $scope.saveLand = function (id) {
-        landsAsService.saveLand(id, $scope.land).then(function(data){
+        landsAsService.saveLand(id, $scope.land)
+        .then(function(data){
             $scope.land = data;
             return data;
         })

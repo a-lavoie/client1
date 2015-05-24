@@ -1,0 +1,8 @@
+curl \
+-H "Content-Type: application/json" \
+-d '{"name":"Infsys Technologies","size":15000,"details":"Enore d autres détails","other":"Bangalore"}' \
+ http://localhost:3000/api/land
+
+
+
+

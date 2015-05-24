@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var mlands = require('../server/models/lands');
+
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -32,42 +34,104 @@ app.locals.lands = [
 
 router.get('/api/lands', function (req, res, next) {
 
-    res.send(app.locals.lands);
+    mlands.model.find( function(err, doc){ 
+       res.send(doc);
+    });
 
 });
 router.get('/api/land/:id', function (req, res, next) {
-    client1.locals.LandModel.findOne( {id: req.params.id }, function(err, doc){ 
-       //debugger;
-       if ( !err ){
-          res.send(404);
-       } else if ( doc != null ){
-          res.send(doc);
-       } else {
-          res.send(404);
-       }
+      mlands.model.findOne( {id: req.params.id }, function(err, doc){ 
+          console.log('err=' + err + 'doc=' + doc);
+          if ( err ){
+             res.send(404);
+          } else if ( doc != null ){
+             res.send(doc);
+          } else {
+             res.send(404);
+          }
+      });
+});
+
+
+router.post('/api/land/', function (req, res, next) {
+    console.log("Receiving this data to save in lands: " + JSON.stringify(req.body));
+    var data = req.body;
+    var i = mlands.model( data );
+    i._doc.updated = new Date().toISOString();
+    var action = i.save(function(err, other){
+       if (err) throw err;
+       res.send(200);
     });
+    console.log("Sending this data to save in lands" + JSON.stringify(req.body));
 });
 
 
 router.post('/api/land/:id', function (req, res, next) {
+    var modified=false; 
 
-    debugger;
-    console.log("Receiving this data to save in lands: " + JSON.stringify(req.body));
-    var found = 0;
-    var landFound = 404;
-    var lands = app.locals.lands;
-    for (var i = 0; i < lands.length; i++) {
-        if (lands[i].id == req.body.id) {
-            found = i;
-            lands[found] = req.body;
-            landFound = lands[found];
-            landFound.updated = new Date().toISOString();
-            break;
-        }
+    // var id = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
+
+    if (modified){
+       console.log("Receiving this data to save in lands: " + JSON.stringify(req.body));
+       var found = 0;
+       var landFound = 404;
+       var lands = app.locals.lands;
+       for (var i = 0; i < lands.length; i++) {
+           if (lands[i].id == req.body.id) {
+               found = i;
+               lands[found] = req.body;
+               landFound = lands[found];
+               landFound.updated = new Date().toISOString();
+               break;
+           }
+       }
+    } else {
+       console.log("Receiving this data to save in lands: " + JSON.stringify(req.body));
+       var query = { id: req.body.id };
+       var oUpdateData = req.body;
+       var options = {  upsert:true  };
+       //var action = mlands.model.update( 
+       //   query, 
+       //   oUpdateData, 
+       //   options,
+       //   function(err, o){
+       //      console.log(o);
+       //      console.log(err);
+       //      //res.send(action);
+       //   }
+       //);
+       // Verifier que l'instance existe en bd
+       console.log("Sending this data to save in lands" + JSON.stringify(req.body));
+       var action = mlands.model.findOne(
+              {
+                  id:req.body.id
+                  
+              },  
+              function(err, found){
+                 // Si l'instance n'existe pas ou autre erreur
+                 if (err){
+                    res.send(500);
+                 } else {
+                    // Alors creer nouvelle instance
+                    var date = new Date().toISOString();
+                    console.log(found);
+                    found.updated = date;
+                    found.name = req.body.name;
+                    found.details = req.body.details;
+                    found.other = req.body.other;
+                    found.size = req.body.size;
+                    // Sauvegarder (atomic)
+                    found.save(function(err, raw){
+                       if (err){
+                          res.send(500);
+                       } else {
+                          console.log(raw);
+                          res.send(200, raw._doc);
+                       }
+                    });
+                 }
+              });
     }
-
-    console.log("Sending this data to save in lands" + JSON.stringify(req.body));
-    res.send(landFound);
 });
 
 function findLandIndex( id ) {
@@ -85,24 +149,30 @@ function findLandIndex( id ) {
 
 router.delete('/api/land/:id', function (req, res, next) {
 
-    debugger;
-    console.log("Receiving this data to delete in lands: " + JSON.stringify(req.body));
-    var result = 404;
-    var lands = app.locals.lands;
-    var land = findLandIndex(req.params.id);
-    if (land >= 0) {
-        lands.splice(land, 1);
-        result=200;
+    var old=false;
+    if ( old ){
+       console.log("Receiving this data to delete in lands: " + JSON.stringify(req.body));
+       var result = 404;
+       var lands = app.locals.lands;
+       var land = findLandIndex(req.params.id);
+       if (land >= 0) {
+           lands.splice(land, 1);
+           result=200;
+       }
+       console.log("Sending this result lands: " + result);
+       res.sendStatus(result);
+    } else {
+       var action = mlands.model.findOneAndRemove( {id: req.params.id}, function(err){
+          if (err) { res.send(404); }
+          res.send(200);
+       });
     }
-    console.log("Sending this result lands: " + result);
-    res.sendStatus(result);
 });
 
 
 router.post('/api/land', function (req, res, next) {
     var land;
 
-    debugger;
     console.log("Receiving this data to save in lands: " + JSON.stringify(req.body)); 
 
     function findHighestId() {

@@ -15,3 +15,13 @@ Live website demo
 > mongod
 > Recommended to run as a normal user.
 > /usr/bin/mongod --dbpath /home/alainlavoie/WebstormProjects/client1/data
+> mongo
+mongo> show dbs
+mongo> use client1
+mongo> show collections
+... 
+usercollection
+...
+mongo> db.usercollection.find();
+mongo> db.landcollection.find();
+mongo> 
