@@ -207,6 +207,11 @@ client28App.controller('LandDetailController', ['$scope', 'LandsAsService', "$ro
             $scope.land = data;
             return data;
         })
+        .catch(function(error){
+            // find new data !!!
+            $scope.land = data;
+            return data;
+        })
     }
 
 }]);
@@ -261,7 +266,15 @@ client28App.service('LandsAsService', [ "$http", "$rootScope", function ( $http,
                 $rootScope.$emit("lands:updated");
                 return result.data;
             }, function(error){
-                console.log(error);
+                switch( error.status ){
+                    case 409: 
+                       // Conflict on a given data
+                       dataOnServer = error.data;
+                       break;
+                    default:
+                       console.log(error);
+                       break;
+                }
                 return error;
             });
 
