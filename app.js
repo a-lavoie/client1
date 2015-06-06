@@ -1,5 +1,9 @@
 var express = require('express');
 var app = express();
+var io_server = require('http').Server(require('express')());
+var io = require('socket.io')(io_server);
+    io.set('origins', {'localhost:3001':'*', '192.168.2.30:3001': '*'});
+    io_server.listen(3001);
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -26,7 +30,7 @@ if (client1.locals.optionsCreation){
      if ( ~filename.indexOf('.js')){
        console.log('Loading file: ' + filename);
        modelName = path.basename(filename, '.js');
-       var m = require(dirModelFiles + filename); 
+       var m = require(dirModelFiles + filename);  
      } 
    }); 
 } else {
@@ -40,12 +44,20 @@ app.set('views', path.join(__dirname, 'views'));
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico')); 
 app.use(logger('dev'));
+
+app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+        res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+        next();
+    });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 var routes = require('./routes/mindex');
 var users = require('./routes/users');
@@ -54,11 +66,21 @@ app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+    //debugger;
     console.log("Entering in Error Not Found !");
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
+
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+
 
 // error handlers
 
