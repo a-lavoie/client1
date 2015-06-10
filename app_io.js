@@ -7,7 +7,6 @@ var path = require('path');
 
 server.listen(3001);
 
-debugger;
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/public/io_index.html');
 });
@@ -26,14 +25,15 @@ app.use(function (req, res, next) {
 listOfConnexion = new Array();
 connectionCount=0;
 
-io.on('connection', function (socket) {
+var nsp = io.of('/namespace');
+nsp.on('connection', function (socket) {
   listOfConnexion.push({id: connectionCount, link: socket});
   connectionCount++;
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) { 
     console.log("Received event: " + data);
   });
-  socket.on('disconnect', function () {
+  socket.on('disconnect', function () { 
     for ( i=0; i < listOfConnexion.length; ++i ){
       var client = listOfConnexion[i];
       if (client.link === socket){
