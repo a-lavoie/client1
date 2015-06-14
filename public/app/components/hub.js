@@ -1,7 +1,7 @@
 // Client side using socket.io
 
   //var socket = io.connect('http://192.168.2.30');
-  var socket = io('192.168.2.30:3001/namespace').connect();
+  var socket = io('192.168.2.30/namespace').connect();
   socket.on('news', function (data) {
     console.log(data);
     $("#news").append(data);

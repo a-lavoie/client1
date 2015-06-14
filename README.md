@@ -25,3 +25,8 @@ usercollection
 mongo> db.usercollection.find();
 mongo> db.landcollection.find();
 mongo> 
+
+sudo ln -s /home/alainlavoie/WebstormProjects/client1/server/nginx/nginx.conf  /etc/nginx/nginx.conf
+
+Searching for a port already in used
+sudo netstat -lpn
